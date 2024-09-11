@@ -6,6 +6,7 @@ import fileUpload from "express-fileupload";
 import mongoose from "mongoose";
 import cloudinary from "cloudinary"
 import {errormiddleware} from "./Middlewares/errormiddleware.js"
+import user_router from "./Router/userRouter.js";
 
 const app=express();
 
@@ -16,7 +17,7 @@ const uri=process.env.DATABASE_URI
 
 app.use(
     cors({
-        origin:[process.env.FRONTEND_URL,process.env.DASHBOARD_URL],
+        origin:[process.env.FRONTEND_URL],
         methods:["GET","POST","PUT","DELETE"],
         credentials:true
     })  
@@ -26,10 +27,21 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
+app.use(
+    fileUpload({
+      useTempFiles: true,
+      tempFileDir: "/tmp/",
+    })
+  );
+
 // app listening 
 app.listen(port,(req,res)=>{
     console.log(`App running on port ${port}`);
 })
+
+// app use
+app.use("/api/v1/user",user_router)
+
 
 // using cloudinary
 cloudinary.v2.config({
@@ -37,6 +49,14 @@ cloudinary.v2.config({
     api_key:process.env.CLOUDINARY_API_KEY,
     api_secret:process.env.CLOUDINARY_API_SECRET,
 })
+
+// DataBase Connect
+try {
+    mongoose.connect(uri);
+    console.log("Database Connected")
+} catch (error) {
+    console.log(error);
+}
 
 // middleware error
 app.use(errormiddleware)
