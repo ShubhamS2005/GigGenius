@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import cloudinary from "cloudinary"
 import {errormiddleware} from "./Middlewares/errormiddleware.js"
 import user_router from "./Router/userRouter.js";
+import { User } from "./Models/userSchema.js";
 
 const app=express();
 
@@ -41,7 +42,12 @@ app.listen(port,(req,res)=>{
 
 // app use
 app.use("/api/v1/user",user_router)
-
+app.get("/verify",async(req,res)=>{
+    const updateInfo=await User.updateOne({_id:req.query.id},{$set:{isVerified:1}})
+    
+    console.log(updateInfo);
+    res.redirect(`${process.env.FRONTEND_URL}`)
+})
 
 // using cloudinary
 cloudinary.v2.config({
