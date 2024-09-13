@@ -24,7 +24,7 @@ export  const UserRegister=catchAsyncErrors(async(req,res,next)=>{
     }
 })
 
-// reset password
+//Send Mail
 export const sendVerifymail=async(firstname,lastname,email,user_id)=>{
     try {
         const transpoter=nodemailer.createTransport({
@@ -40,7 +40,6 @@ export const sendVerifymail=async(firstname,lastname,email,user_id)=>{
             from:process.env.EMAIL_USER,
             to:email,
             subject:'Verification of GigGenius',
-            // html:`<img src="" >`,
             html:`<p>Hii ${firstname} ${lastname} ,this email is send to inform you that your account is created on GigGenius please verify your account by click here <a href="http://127.0.0.1:${process.env.PORT}/verify?id=${user_id}">Verify</a> </p>`
         }
 
@@ -81,4 +80,32 @@ export const login=catchAsyncErrors(async(req,res,next)=>{
         return next(new ErrorHandler("User is not verifyied please click on link send to you"));
     }
     generateToken(user,"User Logged in Successfully",200,res)
+})
+
+export const GetAllClient=catchAsyncErrors(async(req,res,next)=>{
+    const clients=await User.find({role:"Client"})
+    res.status(200).json({
+        success:true,
+        clients
+    })
+
+})
+
+export const GetUser=catchAsyncErrors(async(req,res,next)=>{
+    const user=req.user
+    res.status(200).json({
+        success:true,
+        user
+    })
+
+})
+
+export const UserLogout=catchAsyncErrors(async(req,res,next)=>{
+    res.status(200).cookie("userToken","",{
+        httpOnly:true,
+        expires:new Date(Date.now())
+    }).json({
+        success:true,
+        message:"User out succesfully"
+    })
 })

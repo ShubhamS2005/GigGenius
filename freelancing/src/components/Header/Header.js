@@ -3,7 +3,6 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import logo from "./Screenshot_2024-09-12_183229-removebg-preview.png"
 const Header = () => {
-    const { loginWithRedirect, user, isAuthenticated, isLoading, logout   } = useAuth0();
   
   return (
     <div>
